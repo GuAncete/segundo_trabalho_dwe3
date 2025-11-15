@@ -1,72 +1,93 @@
-const db = require ("../database/databaseconfig");
-const bcrypt = require('bcryptjs');
+const db = require("../database/databaseconfig");
+const bcrypt = require("bcryptjs");
 
-// Buscar todos os Usuario (não deletados)
+// Buscar todos os usuários (não deletados)
 const getAllUsuario = async () => {
-  const { rows } = await db.query("SELECT * FROM usuario WHERE deleted = false ORDER BY id_usuario;");
+  const { rows } = await db.query(`
+    SELECT * FROM usuario 
+    WHERE deleted = false 
+    ORDER BY id_usuario;
+  `);
   return rows;
 };
 
-// Buscar usuario por ID (não deletados)
+// Buscar usuário por ID
 const getUsuarioById = async (id_usuario) => {
-  const { rows } = await db.query("SELECT * FROM usuario WHERE id_usuario = $1 AND deleted = false;", [id_usuario]);
+  const { rows } = await db.query(`
+    SELECT * FROM usuario 
+    WHERE id_usuario = $1 AND deleted = false;
+  `, [id_usuario]);
+
   return rows[0];
 };
 
-// Criar usuario 
+// Criar usuário
 const insertUsuario = async (usuario) => {
-  const { nome, email, senha, tipo, cpf_cnpj } = usuario;
-  
-  // Hash da senha
-  const saltRounds = 10;
-  const senhaHash = await bcrypt.hash(senha, saltRounds);
-  
+  const { nome, email, senha, tipo_pessoa } = usuario;
+
+  // Cria o hash da senha
+  const senhaHash = await bcrypt.hash(senha, 10);
+
   const query = `
-    INSERT INTO usuario (nome, email, senha, tipo, cpf_cnpj)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO usuario (nome, email, senha_hash, tipo_pessoa)
+    VALUES ($1, $2, $3, $4)
     RETURNING *;
   `;
-  const values = [nome, email, senhaHash, tipo, cpf_cnpj];
+
+  const values = [nome, email, senhaHash, tipo_pessoa];
+
   const { rows } = await db.query(query, values);
   return rows[0];
 };
 
-// Atualizar usuario
+// Atualizar usuário
 const updateUsuario = async (id_usuario, usuario) => {
-  const { nome, email, senha, tipo, cpf_cnpj } = usuario;
-  
-  let senhaHash = senha;
+  const { nome, email, senha, tipo_pessoa } = usuario;
+
+  let senhaHash = null;
+
   if (senha) {
-    const saltRounds = 10;
-    senhaHash = await bcrypt.hash(senha, saltRounds);
+    senhaHash = await bcrypt.hash(senha, 10);
   }
-  
+
   const query = `
     UPDATE usuario
-    SET nome = $1, email = $2, senha = $3, tipo = $4, cpf_cnpj = $5
-    WHERE id_usuario = $6 AND deleted = false
+    SET 
+      nome = $1, 
+      email = $2, 
+      senha_hash = COALESCE($3, senha_hash), 
+      tipo_pessoa = $4
+    WHERE id_usuario = $5 AND deleted = false
     RETURNING *;
   `;
-  const values = [nome, email, senhaHash, tipo, cpf_cnpj, id_usuario];
+
+  const values = [nome, email, senhaHash, tipo_pessoa, id_usuario];
+
   const { rows } = await db.query(query, values);
   return rows[0];
 };
 
-// Deletar usuario (soft delete)
+// Deletar usuário (soft delete)
 const deleteUsuario = async (id_usuario) => {
-  const { rows } = await db.query("UPDATE usuario SET deleted = true WHERE id_usuario = $1 AND deleted = false RETURNING *;", [id_usuario]);
+  const { rows } = await db.query(`
+    UPDATE usuario 
+    SET deleted = true 
+    WHERE id_usuario = $1 AND deleted = false
+    RETURNING *;
+  `, [id_usuario]);
+
   return rows[0];
 };
 
-// Verificar se CPF/CNPJ já existe
-const verificarCpfCnpjExistente = async (cpf_cnpj) => {
-  const { rows } = await db.query(
-    "SELECT * FROM usuario WHERE cpf_cnpj = $1 AND deleted = false;", 
-    [cpf_cnpj]
-  );
+// Verificar se email já existe
+const verificarEmailExistente = async (email) => {
+  const { rows } = await db.query(`
+    SELECT * FROM usuario 
+    WHERE email = $1 AND deleted = false;
+  `, [email]);
+
   return rows.length > 0 ? rows[0] : null;
 };
-
 
 module.exports = {
   getAllUsuario,
@@ -74,5 +95,5 @@ module.exports = {
   insertUsuario,
   updateUsuario,
   deleteUsuario,
-  verificarCpfCnpjExistente,
+  verificarEmailExistente,
 };

@@ -2,48 +2,58 @@ const jwt = require("jsonwebtoken");
 const bCrypt = require("bcryptjs");
 const mdlLogin = require("../models/mdlLogin");
 
-const Login = async (req, res, next) => { 
-  
-  const credencial = await mdlLogin.GetCredencial(req.body.UserName);    
-   
-  if (credencial.length == 0) {
-    return res.status(403).json({ message: "Usuário não identificado!" });    
-  }  
+const Login = async (req, res) => {
+  const email = req.body.UserName;
+  const senha = req.body.Password;
 
-  if (bCrypt.compareSync(req.body.Password, credencial[0].senhaUsuario)) {
-    //auth ok
-    const username = credencial[0].emailUsuario;
-    const token = jwt.sign({ username }, process.env.SECRET_API, {
-      expiresIn: 120*60,
-    });
-    return res.json({ auth: true, token: token });
+  const credencial = await mdlLogin.GetCredencial(email);
+
+  if (!credencial) {
+    return res.status(403).json({ message: "Usuário não identificado!" });
   }
 
-  res.status(403).json({ message: "Login inválido!" });
+  const senhaCorreta = bCrypt.compareSync(senha, credencial.senha_hash);
+
+  if (!senhaCorreta) {
+    return res.status(403).json({ message: "Login inválido!" });
+  }
+
+  // token guarda o ID OU email
+  const token = jwt.sign(
+    { email: credencial.email }, 
+    process.env.SECRET_API,
+    { expiresIn: "2h" }
+  );
+
+  return res.json({ auth: true, token });
 };
 
 function AutenticaJWT(req, res, next) {
   const tokenHeader = req.headers["authorization"];
-  if (!tokenHeader)
-    return res
-      .status(401)
-      .json({ auth: false, message: "Não foi informado o token JWT" });
 
-  const bearer = tokenHeader.split(" ");
-  const token = bearer[1];
+  if (!tokenHeader) {
+    return res.status(401).json({
+      auth: false,
+      message: "Token JWT não informado",
+    });
+  }
 
-  jwt.verify(token, process.env.SECRET_API, function (err, decoded) {
-    if (err)
-      return res
-        .status(401)
-        .json({ auth: false, message: "JWT inválido ou expirado" });
+  const token = tokenHeader.split(" ")[1];
 
-    req.userId = decoded.id;
+  jwt.verify(token, process.env.SECRET_API, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({
+        auth: false,
+        message: "JWT inválido ou expirado",
+      });
+    }
+
+    req.email = decoded.email;
     next();
   });
 }
 
-const Logout = (req, res, next) => {
+const Logout = (req, res) => {
   res.json({ auth: false, token: null });
 };
 
