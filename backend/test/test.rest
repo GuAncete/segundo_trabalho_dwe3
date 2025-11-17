@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:40000
 ## Mude o token aqui para novos testes:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJtYXJjZWxvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYzMzk2ODAzLCJleHAiOjE3NjM0MDQwMDN9.5SFuzr7a0LAjRGpi5yEIVLQoM5OYQQGIVK75mAs7drk
+@token = coloque seu token aqui
 
 ## TESTE USUARIO/LOGIN ##
 ################################################
