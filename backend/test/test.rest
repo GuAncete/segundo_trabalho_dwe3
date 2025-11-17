@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:40000
 ## Mude o token aqui para novos testes:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJtYXJjZWxvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYzMzg1MzczLCJleHAiOjE3NjMzOTI1NzN9.tTbFSjEnWVVRz1-PwlL9OOmrD88IW5L_SKulxhyaxPs
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhbjdAZXhhbXBsZS5jb20iLCJpYXQiOjE3NjMzODYxNDcsImV4cCI6MTc2MzM5MzM0N30.1JN9RtIjAAU18cBa_PNwJAr6gtGTxuZMB9eIrnzbrH0
 
 
 ################################################
@@ -10,7 +10,7 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-  "UserName": "marcelo@example.com",
+  "UserName": "an7@example.com",
   "Password": "123456"
 }
 
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
   "nome_usuario": "Marcelo",
-  "email_usuario": "marcelo@example.com",
+  "email_usuario": "an7@example.com",
   "senha_usuario": "123456",
   "tipo_usuario": "1"
 }
@@ -36,6 +36,16 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "id_usuario": 1
+  "id_usuario": 2
 }
 
+################################################
+#  Logout usuário
+################################################
+POST {{baseUrl}}/logout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+
+}
