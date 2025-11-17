@@ -19,41 +19,35 @@ const getMotoTratamentoById = async (id_moto_tratamento) => {
 
 // Criar relação moto ↔ tratamento
 const insertMotoTratamento = async (registro) => {
-    const { id_moto, id_tratamento, id_usuario, data_servico, observacoes } = registro;
+    const { id_moto, id_tratamento } = registro;
 
     const query = `
         INSERT INTO moto_tratamento
-        (id_moto, id_tratamento, id_usuario, data_servico, observacoes)
-        VALUES ($1, $2, $3, $4, $5)
+        (id_moto, id_tratamento)
+        VALUES ($1, $2)
         RETURNING *;
     `;
 
-    const values = [id_moto, id_tratamento, id_usuario, data_servico, observacoes];
+    const values = [id_moto, id_tratamento];
     const { rows } = await db.query(query, values);
     return rows[0];
 };
 
 // Atualizar relação
 const updateMotoTratamento = async (id_moto_tratamento, registro) => {
-    const { id_moto, id_tratamento, id_usuario, data_servico, observacoes } = registro;
+    const { id_moto, id_tratamento } = registro;
 
     const query = `
         UPDATE moto_tratamento
         SET id_moto = $1,
-            id_tratamento = $2,
-            id_usuario = $3,
-            data_servico = $4,
-            observacoes = $5
-        WHERE id_moto_tratamento = $6 AND deleted = false
+            id_tratamento = $2
+        WHERE id_moto_tratamento = $3 AND deleted = false
         RETURNING *;
     `;
 
     const values = [
         id_moto,
         id_tratamento,
-        id_usuario,
-        data_servico,
-        observacoes,
         id_moto_tratamento
     ];
 

@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:40000
 ## Mude o token aqui para novos testes:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtYXJjZWxvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYzMzk0MzMyLCJleHAiOjE3NjM0MDE1MzJ9.3F6-Le6tNlPUJrwApwkSummwvaftXMmvEi2d-bQUBCU
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJtYXJjZWxvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYzMzk2ODAzLCJleHAiOjE3NjM0MDQwMDN9.5SFuzr7a0LAjRGpi5yEIVLQoM5OYQQGIVK75mAs7drk
 
 ## TESTE USUARIO/LOGIN ##
 ################################################
@@ -130,7 +130,7 @@ Authorization: Bearer {{token}}
 
 ## TESTE MOTO ##
 ################################################
-#  Atualizar Moto
+#  Criar Moto
 ################################################
 POST {{baseUrl}}/insertMoto
 Content-Type: application/json
@@ -166,7 +166,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "id_moto": 1
+  "id_moto": 2
 }
 
 ################################################
@@ -178,4 +178,103 @@ Authorization: Bearer {{token}}
 
 {
   "id_moto": 1
+}
+
+
+## TESTE TRATAMENTO ##
+################################################
+# Criar Tratamento
+################################################
+POST {{baseUrl}}/InsertTratamento
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome_tratamento": "Troca de óleo",
+  "valor_tratamento": 150.00,
+  "descricao_tratamento": "Troca completa de óleo do motor"
+}
+
+################################################
+# Atualizar Tratamento
+################################################
+POST {{baseUrl}}/UpdateTratamento
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_tratamento": 1,
+  "nome_tratamento": "Troca de óleo premium",
+  "valor_tratamento": 200.00,
+  "descricao_tratamento": "Troca completa de óleo premium do motor"
+}
+
+################################################
+# Buscar Tratamento por ID
+################################################
+POST {{baseUrl}}/GetTratamentoByID
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_tratamento": 1
+}
+
+################################################
+# Deletar Tratamento
+################################################
+POST {{baseUrl}}/DeleteTratamento
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_tratamento": 1
+}
+
+## TESTE MOTO TRATAMENTO ##
+################################################
+# Criar Moto Tratamento
+################################################
+POST {{baseUrl}}/InsertMotoTratamento
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_moto": 2,
+  "id_tratamento": 1
+}
+
+################################################
+# Atualizar Moto Tratamento
+################################################
+POST {{baseUrl}}/UpdateMotoTratamento
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_moto_tratamento": 1,
+  "id_moto": 1,
+  "id_tratamento": 2
+}
+
+################################################
+# Buscar Moto Tratamento por ID
+################################################
+POST {{baseUrl}}/GetMotoTratamentoByID
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_moto_tratamento": 1
+}
+
+################################################
+# Deletar Moto Tratamento
+################################################
+POST {{baseUrl}}/DeleteMotoTratamento
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_moto_tratamento": 1
 }
