@@ -1,19 +1,15 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.up = function (knex) {
   return knex.schema.createTable("tratamento", (table) => {
-    table.increments("idTratamento").primary();
-    table.string("nomeTratamento").notNullable();
-    table.decimal("precoTratamento").notNullable();
+    table.increments("id_tratamento").primary();
+    table.string("nome_tratamento").notNullable();
+    table.decimal("valor_tratamento", 10, 2).notNullable();
+    table.text("descricao_tratamento").nullable();
+
+    table.boolean("deleted").notNullable().defaultTo(false);
+    table.timestamp("created_at").defaultTo(knex.fn.now());
   });
 };
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.down = function (knex) {
   return knex.schema.dropTable("tratamento");
 };

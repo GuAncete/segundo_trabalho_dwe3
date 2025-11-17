@@ -1,22 +1,15 @@
-
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.up = function (knex) {
-  return knex.schema.createTable('cliente', (table) => {
-    table.increments('idCliente').primary(); 
-    table.string('nomeCliente').notNullable(); 
-    table.string('cpfCliente').notNullable();
-    table.string('telefoneCliente').notNullable();
-    table.string('emailCliente').notNullable().unique(); 
+  return knex.schema.createTable("cliente", (table) => {
+    table.increments("id_cliente").primary();
+    table.string("nome_cliente").notNullable();
+    table.string("cpf_cliente").notNullable().unique();
+    table.string("telefone_cliente").notNullable();
+    table.string("email_cliente").notNullable().unique();
+    table.boolean("deleted").notNullable().defaultTo(false);
+    table.timestamp("created_at").defaultTo(knex.fn.now());
   });
 };
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.down = function (knex) {
-  return knex.schema.dropTable('cliente');
+  return knex.schema.dropTable("cliente");
 };

@@ -1,25 +1,23 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.up = function (knex) {
   return knex.schema.createTable("moto", (table) => {
-    table.increments("idMoto").primary();
-    table.string("modeloMoto").notNullable();
-    table.string("marcaMoto").notNullable();
-    table.string("anoMoto").notNullable();
+    table.increments("id_moto").primary();
+    table.string("modelo_moto").notNullable();
+    table.string("marca_moto").notNullable();
+    table.integer("ano_moto").notNullable();
+
     table
-      .integer("idCliente")
-      .references("idCliente")
+      .integer("id_cliente")
+      .unsigned()
+      .notNullable()
+      .references("id_cliente")
       .inTable("cliente")
-      .onDelete("CASCADE");
+      .onDelete("RESTRICT");
+
+    table.boolean("deleted").notNullable().defaultTo(false);
+    table.timestamp("created_at").defaultTo(knex.fn.now());
   });
 };
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.down = function (knex) {
   return knex.schema.dropTable("moto");
 };

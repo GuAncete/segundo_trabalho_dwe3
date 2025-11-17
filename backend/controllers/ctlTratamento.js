@@ -11,8 +11,8 @@ const getAllTratamento = async (req, res) => {
 
 const getTratamentoById = async (req, res) => {
   try {
-    const { idTratamento } = req.body;
-    const dado = await mdlTratamento.getTratamentoById(idTratamento);
+    const { id_tratamento } = req.body;
+    const dado = await mdlTratamento.getTratamentoById(id_tratamento);
     res.json(dado);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -30,8 +30,8 @@ const insertTratamento = async (req, res) => {
 
 const updateTratamento = async (req, res) => {
   try {
-    const { idTratamento } = req.body;
-    const dado = await mdlTratamento.updateTratamento(idTratamento, req.body);
+    const { id_tratamento } = req.body;
+    const dado = await mdlTratamento.updateTratamento(id_tratamento, req.body);
     res.json(dado);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -40,8 +40,8 @@ const updateTratamento = async (req, res) => {
 
 const deleteTratamento = async (req, res) => {
   try {
-    const { idTratamento } = req.body;
-    await mdlTratamento.deleteTratamento(idTratamento);
+    const { id_tratamento } = req.body;
+    await mdlTratamento.deleteTratamento(id_tratamento);
     res.json({ message: "Tratamento deletado." });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -1,34 +1,28 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.up = function (knex) {
-  return knex.schema.createTable('tratamentomoto', (table) => {
-    table.increments('idTratamentoMoto').primary();
+  return knex.schema.createTable("moto_tratamento", (table) => {
+    table.increments("id_moto_tratamento").primary();
 
     table
-      .integer('idMoto')
+      .integer("id_moto")
+      .unsigned()
       .notNullable()
-      .references('idMoto')
-      .inTable('moto')
-      .onDelete('CASCADE');
+      .references("id_moto")
+      .inTable("moto")
+      .onDelete("CASCADE");
 
     table
-      .integer('idTratamento')
+      .integer("id_tratamento")
+      .unsigned()
       .notNullable()
-      .references('idTratamento')
-      .inTable('tratamento')
-      .onDelete('CASCADE');
+      .references("id_tratamento")
+      .inTable("tratamento")
+      .onDelete("CASCADE");
 
-    table.timestamp('dataServico').notNullable().defaultTo(knex.fn.now());
-    table.text('observacaoServico'); 
+    table.boolean("deleted").notNullable().defaultTo(false);
+    table.timestamp("created_at").defaultTo(knex.fn.now());
   });
 };
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 exports.down = function (knex) {
-  return knex.schema.dropTable('tratamentomoto');
+  return knex.schema.dropTable("moto_tratamento");
 };

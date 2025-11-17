@@ -11,8 +11,8 @@ const getAllCliente = async (req, res) => {
 
 const getClienteById = async (req, res) => {
   try {
-    const { idCliente } = req.body;
-    const dado = await mdlCliente.getClienteById(idCliente);
+    const { id_cliente } = req.body;
+    const dado = await mdlCliente.getClienteById(id_cliente);
     res.json(dado);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -30,8 +30,8 @@ const insertCliente = async (req, res) => {
 
 const updateCliente = async (req, res) => {
   try {
-    const { idCliente } = req.body;
-    const cliente = await mdlCliente.updateCliente(idCliente, req.body);
+    const { id_cliente } = req.body;
+    const cliente = await mdlCliente.updateCliente(id_cliente, req.body);
     res.json(cliente);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -40,8 +40,8 @@ const updateCliente = async (req, res) => {
 
 const deleteCliente = async (req, res) => {
   try {
-    const { idCliente } = req.body;
-    await mdlCliente.deleteCliente(idCliente);
+    const { id_cliente } = req.body;
+    await mdlCliente.deleteCliente(id_cliente);
     res.json({ message: "Cliente deletado." });
   } catch (error) {
     res.status(500).json({ error: error.message });

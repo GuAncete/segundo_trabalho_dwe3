@@ -5,58 +5,58 @@ const getAllCliente = async () => {
   const { rows } = await db.query(`
     SELECT * FROM cliente 
     WHERE deleted = false 
-    ORDER BY idCliente;
+    ORDER BY id_cliente;
   `);
   return rows;
 };
 
 // Buscar cliente por ID
-const getClienteById = async (idCliente) => {
+const getClienteById = async (id_cliente) => {
   const { rows } = await db.query(`
     SELECT * FROM cliente 
-    WHERE idCliente = $1 AND deleted = false;
-  `, [idCliente]);
+    WHERE id_cliente = $1 AND deleted = false;
+  `, [id_cliente]);
 
   return rows[0];
 };
 
 // Criar cliente
 const insertCliente = async (cliente) => {
-  const { nomeCliente, cpfCliente, telefoneCliente, emailCliente } = cliente;
+  const { nome_cliente, cpf_cliente, telefone_cliente, email_cliente } = cliente;
 
   const query = `
-    INSERT INTO cliente (nomeCliente, cpfCliente, telefoneCliente, emailCliente)
+    INSERT INTO cliente (nome_cliente, cpf_cliente, telefone_cliente, email_cliente)
     VALUES ($1, $2, $3, $4)
     RETURNING *;
   `;
 
-  const values = [nomeCliente, cpfCliente, telefoneCliente, emailCliente];
+  const values = [nome_cliente, cpf_cliente, telefone_cliente, email_cliente];
   const { rows } = await db.query(query, values);
 
   return rows[0];
 };
 
 // Atualizar cliente
-const updateCliente = async (idCliente, cliente) => {
-  const { nomeCliente, cpfCliente, telefoneCliente, emailCliente } = cliente;
+const updateCliente = async (id_cliente, cliente) => {
+  const { nome_cliente, cpf_cliente, telefone_cliente, email_cliente } = cliente;
 
   const query = `
     UPDATE cliente
     SET
-      nomeCliente = $1,
-      cpfCliente = $2,
-      telefoneCliente = $3,
-      emailCliente = $4
-    WHERE idCliente = $5 AND deleted = false
+      nome_cliente = $1,
+      cpf_cliente = $2,
+      telefone_cliente = $3,
+      email_cliente = $4
+    WHERE id_cliente = $5 AND deleted = false
     RETURNING *;
   `;
 
   const values = [
-    nomeCliente,
-    cpfCliente,
-    telefoneCliente,
-    emailCliente,
-    idCliente
+    nome_cliente,
+    cpf_cliente,
+    telefone_cliente,
+    email_cliente,
+    id_cliente
   ];
 
   const { rows } = await db.query(query, values);
@@ -64,23 +64,23 @@ const updateCliente = async (idCliente, cliente) => {
 };
 
 // Soft delete
-const deleteCliente = async (idCliente) => {
+const deleteCliente = async (id_cliente) => {
   const { rows } = await db.query(`
     UPDATE cliente
     SET deleted = true
-    WHERE idCliente = $1 AND deleted = false
+    WHERE id_cliente = $1 AND deleted = false
     RETURNING *;
-  `, [idCliente]);
+  `, [id_cliente]);
 
   return rows[0];
 };
 
 // Verificar CPF existente
-const verificarCpfExistente = async (cpfCliente) => {
+const verificarCpfExistente = async (cpf_cliente) => {
   const { rows } = await db.query(`
     SELECT * FROM cliente
-    WHERE cpfCliente = $1 AND deleted = false;
-  `, [cpfCliente]);
+    WHERE cpf_cliente = $1 AND deleted = false;
+  `, [cpf_cliente]);
 
   return rows.length > 0 ? rows[0] : null;
 };

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const getAllUsuario = async () => {
   const { rows } = await db.query(`
     SELECT * FROM usuario 
+    WHERE deleted = false
     ORDER BY id_usuario;
   `);
   return rows;
@@ -15,7 +16,8 @@ const getUsuarioById = async (id_usuario) => {
   const { rows } = await db.query(
     `
     SELECT * FROM usuario 
-    WHERE id_usuario = $1;
+    WHERE id_usuario = $1 
+    AND deleted = false;
     `,
     [id_usuario]
   );
@@ -59,7 +61,7 @@ const updateUsuario = async (id_usuario, usuario) => {
       email_usuario = $2,
       senha_usuario = COALESCE($3, senha_usuario),
       tipo_usuario = $4
-    WHERE id_usuario = $5
+    WHERE id_usuario = $5 AND deleted = false
     RETURNING *;
   `;
 
@@ -69,12 +71,13 @@ const updateUsuario = async (id_usuario, usuario) => {
   return rows[0];
 };
 
-// Deletar usuário
+// Deletar usuário (soft delete)
 const deleteUsuario = async (id_usuario) => {
   const { rows } = await db.query(
     `
-    DELETE FROM usuario
-    WHERE id_usuario = $1
+    UPDATE usuario
+    SET deleted = true
+    WHERE id_usuario = $1 AND deleted = false
     RETURNING *;
     `,
     [id_usuario]

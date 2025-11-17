@@ -1,7 +1,20 @@
 @baseUrl = http://localhost:40000
 ## Mude o token aqui para novos testes:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhbjdAZXhhbXBsZS5jb20iLCJpYXQiOjE3NjMzODYxNDcsImV4cCI6MTc2MzM5MzM0N30.1JN9RtIjAAU18cBa_PNwJAr6gtGTxuZMB9eIrnzbrH0
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtYXJjZWxvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYzMzk0MzMyLCJleHAiOjE3NjM0MDE1MzJ9.3F6-Le6tNlPUJrwApwkSummwvaftXMmvEi2d-bQUBCU
 
+## TESTE USUARIO/LOGIN ##
+################################################
+# Criar Usuario
+################################################
+POST {{baseUrl}}/insertUsuario
+Content-Type: application/json
+
+{
+  "nome_usuario": "Marcelo",
+  "email_usuario": "marcelo@example.com",
+  "senha_usuario": "123456",
+  "tipo_usuario": "1"
+}
 
 ################################################
 # Logar Usuario
@@ -10,26 +23,28 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-  "UserName": "an7@example.com",
+  "UserName": "marcelo@example.com",
   "Password": "123456"
 }
 
 
 ################################################
-# Criar usuário
+# Atualizar Usuario
 ################################################
-POST {{baseUrl}}/insertUsuario
+POST {{baseUrl}}/updateUsuario
 Content-Type: application/json
+Authorization: Bearer {{token}} 
 
 {
   "nome_usuario": "Marcelo",
-  "email_usuario": "an7@example.com",
+  "email_usuario": "mfavaro54@example.com",
   "senha_usuario": "123456",
-  "tipo_usuario": "1"
+  "tipo_usuario": "1",
+  "id_usuario": 2
 }
 
 ################################################
-#  Buscar usuário por ID
+#  Buscar Usuario por ID
 ################################################
 POST {{baseUrl}}/GetUsuarioByID
 Content-Type: application/json
@@ -40,7 +55,18 @@ Authorization: Bearer {{token}}
 }
 
 ################################################
-#  Logout usuário
+# Deletar Usuario
+################################################
+POST {{baseUrl}}/deleteUsuario
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_usuario": 1
+}
+
+################################################
+#  Logout Usuario
 ################################################
 POST {{baseUrl}}/logout
 Content-Type: application/json
@@ -48,4 +74,108 @@ Authorization: Bearer {{token}}
 
 {
 
+}
+
+## TESTE CLIENTE ##
+################################################
+# Criar Cliente
+################################################
+POST {{baseUrl}}/insertCliente
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome_cliente": "João da Silva",
+  "cpf_cliente": "12345678900",
+  "telefone_cliente": "11988887777",
+  "email_cliente": "joao.silva@example.com"
+}
+
+################################################
+# Atualizar Cliente
+################################################
+POST {{baseUrl}}/updateCliente
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome_cliente": "João",
+  "cpf_cliente": "12345678900",
+  "telefone_cliente": "11988887777",
+  "email_cliente": "joao.silva@example.com",
+  "id_cliente": "1"
+}
+
+################################################
+# Buscar Cliente por ID
+################################################
+POST {{baseUrl}}/getClienteById
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_cliente": 1
+}
+
+################################################
+# Deletar Cliente
+################################################
+POST {{baseUrl}}/deleteCliente
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_cliente": 1
+}
+
+## TESTE MOTO ##
+################################################
+#  Atualizar Moto
+################################################
+POST {{baseUrl}}/insertMoto
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "modelo_moto": "CB 500F",
+  "marca_moto": "Honda",
+  "ano_moto": 2021,
+  "id_cliente": 1
+}
+
+################################################
+#  Atualizar Moto
+################################################
+POST {{baseUrl}}/updateMoto
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "modelo_moto": "CB 500F",
+  "marca_moto": "Honda",
+  "ano_moto": 2022,
+  "id_cliente": 1,
+  "id_moto": 1
+}
+
+################################################
+#  Buscar Moto por ID
+################################################
+POST {{baseUrl}}/getMotoById
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_moto": 1
+}
+
+################################################
+#  Deletar Moto 
+################################################
+POST {{baseUrl}}/deleteMoto
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_moto": 1
 }
