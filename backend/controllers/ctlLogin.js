@@ -3,24 +3,30 @@ const bCrypt = require("bcryptjs");
 const mdlLogin = require("../models/mdlLogin");
 
 const Login = async (req, res) => {
-  const email = req.body.UserName;
-  const senha = req.body.Password;
+  const email_usuario = req.body.UserName;
+  const senha_usuario = req.body.Password;
 
-  const credencial = await mdlLogin.GetCredencial(email);
+  const credencial = await mdlLogin.GetCredencial(email_usuario);
 
   if (!credencial) {
-    return res.status(403).json({ message: "Usuário não identificado!" });
+    return res.status(403).json({ message: "Usuário não encontrado!" });
   }
 
-  const senhaCorreta = bCrypt.compareSync(senha, credencial.senha_hash);
+  const senhaCorreta = bCrypt.compareSync(
+    senha_usuario,
+    credencial.senha_usuario
+  );
 
   if (!senhaCorreta) {
-    return res.status(403).json({ message: "Login inválido!" });
+    return res.status(403).json({ message: "Senha inválida!" });
   }
 
-  // token guarda o ID OU email
+  // token guarda o ID e o email
   const token = jwt.sign(
-    { email: credencial.email }, 
+    {
+      id: credencial.id_usuario,
+      email: credencial.email_usuario,
+    },
     process.env.SECRET_API,
     { expiresIn: "2h" }
   );
@@ -38,17 +44,15 @@ function AutenticaJWT(req, res, next) {
     });
   }
 
-  const token = tokenHeader.split(" ")[1];
+  const token = tokenHeader.replace("Bearer ", "");
 
-  jwt.verify(token, process.env.SECRET_API, (err, decoded) => {
+  jwt.verify(token, process.env.SECRET_API, (err) => {
     if (err) {
-      return res.status(401).json({
+      return res.status(403).json({
         auth: false,
-        message: "JWT inválido ou expirado",
+        message: "Token inválido!",
       });
     }
-
-    req.email = decoded.email;
     next();
   });
 }

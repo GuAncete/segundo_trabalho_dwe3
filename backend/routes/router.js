@@ -7,6 +7,7 @@ const ctlMoto = require("../controllers/ctlMoto");
 const ctlTratamento = require("../controllers/ctlTratamento");
 const ctlMotoTratamento = require("../controllers/ctlMotoTratamento");
 
+
 const appLogin = require("../controllers/ctlLogin"); // Autenticação JWT
 
 // middleware padrão
@@ -20,9 +21,12 @@ routerApp.get("/", (req, res) => {
 });
 
 // =================== USUÁRIO =====================
+// Rota pública para cadastro (sem autenticação)
+routerApp.post("/InsertUsuario", ctlUsuario.insertUsuario);
+// Rotas protegidas
 routerApp.get("/GetAllUsuario", appLogin.AutenticaJWT, ctlUsuario.getAllUsuario);
 routerApp.post("/GetUsuarioByID", appLogin.AutenticaJWT, ctlUsuario.getUsuarioById);
-routerApp.post("/InsertUsuario", appLogin.AutenticaJWT, ctlUsuario.insertUsuario);
+
 routerApp.post("/UpdateUsuario", appLogin.AutenticaJWT, ctlUsuario.updateUsuario);
 routerApp.post("/DeleteUsuario", appLogin.AutenticaJWT, ctlUsuario.deleteUsuario);
 

@@ -1,11 +1,10 @@
 const db = require("../database/databaseconfig");
 const bcrypt = require("bcryptjs");
 
-// Buscar todos os usuários (não deletados)
+// Buscar todos os usuários
 const getAllUsuario = async () => {
   const { rows } = await db.query(`
     SELECT * FROM usuario 
-    WHERE deleted = false 
     ORDER BY id_usuario;
   `);
   return rows;
@@ -13,28 +12,31 @@ const getAllUsuario = async () => {
 
 // Buscar usuário por ID
 const getUsuarioById = async (id_usuario) => {
-  const { rows } = await db.query(`
+  const { rows } = await db.query(
+    `
     SELECT * FROM usuario 
-    WHERE id_usuario = $1 AND deleted = false;
-  `, [id_usuario]);
+    WHERE id_usuario = $1;
+    `,
+    [id_usuario]
+  );
 
   return rows[0];
 };
 
 // Criar usuário
 const insertUsuario = async (usuario) => {
-  const { nome, email, senha, tipo_pessoa } = usuario;
+  const { nome_usuario, email_usuario, senha_usuario, tipo_usuario } = usuario;
 
-  // Cria o hash da senha
-  const senhaHash = await bcrypt.hash(senha, 10);
+  // criar hash
+  const senhaHash = await bcrypt.hash(senha_usuario, 10);
 
   const query = `
-    INSERT INTO usuario (nome, email, senha_hash, tipo_pessoa)
+    INSERT INTO usuario (nome_usuario, email_usuario, senha_usuario, tipo_usuario)
     VALUES ($1, $2, $3, $4)
     RETURNING *;
   `;
 
-  const values = [nome, email, senhaHash, tipo_pessoa];
+  const values = [nome_usuario, email_usuario, senhaHash, tipo_usuario];
 
   const { rows } = await db.query(query, values);
   return rows[0];
@@ -42,51 +44,43 @@ const insertUsuario = async (usuario) => {
 
 // Atualizar usuário
 const updateUsuario = async (id_usuario, usuario) => {
-  const { nome, email, senha, tipo_pessoa } = usuario;
+  const { nome_usuario, email_usuario, senha_usuario, tipo_usuario } = usuario;
 
   let senhaHash = null;
 
-  if (senha) {
-    senhaHash = await bcrypt.hash(senha, 10);
+  if (senha_usuario) {
+    senhaHash = await bcrypt.hash(senha_usuario, 10);
   }
 
   const query = `
     UPDATE usuario
     SET 
-      nome = $1, 
-      email = $2, 
-      senha_hash = COALESCE($3, senha_hash), 
-      tipo_pessoa = $4
-    WHERE id_usuario = $5 AND deleted = false
+      nome_usuario = $1,
+      email_usuario = $2,
+      senha_usuario = COALESCE($3, senha_usuario),
+      tipo_usuario = $4
+    WHERE id_usuario = $5
     RETURNING *;
   `;
 
-  const values = [nome, email, senhaHash, tipo_pessoa, id_usuario];
+  const values = [nome_usuario, email_usuario, senhaHash, tipo_usuario, id_usuario];
 
   const { rows } = await db.query(query, values);
   return rows[0];
 };
 
-// Deletar usuário (soft delete)
+// Deletar usuário
 const deleteUsuario = async (id_usuario) => {
-  const { rows } = await db.query(`
-    UPDATE usuario 
-    SET deleted = true 
-    WHERE id_usuario = $1 AND deleted = false
+  const { rows } = await db.query(
+    `
+    DELETE FROM usuario
+    WHERE id_usuario = $1
     RETURNING *;
-  `, [id_usuario]);
+    `,
+    [id_usuario]
+  );
 
   return rows[0];
-};
-
-// Verificar se email já existe
-const verificarEmailExistente = async (email) => {
-  const { rows } = await db.query(`
-    SELECT * FROM usuario 
-    WHERE email = $1 AND deleted = false;
-  `, [email]);
-
-  return rows.length > 0 ? rows[0] : null;
 };
 
 module.exports = {
@@ -95,5 +89,4 @@ module.exports = {
   insertUsuario,
   updateUsuario,
   deleteUsuario,
-  verificarEmailExistente,
 };

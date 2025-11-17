@@ -2,9 +2,9 @@ const db = require("../database/databaseconfig");
 
 const GetCredencial = async (email) => {
   const query = `
-    SELECT email, senha_hash 
+    SELECT id_usuario, email_usuario, senha_usuario 
     FROM usuario 
-    WHERE email = $1 AND deleted = false
+    WHERE email_usuario = $1
   `;
 
   const { rows } = await db.query(query, [email]);

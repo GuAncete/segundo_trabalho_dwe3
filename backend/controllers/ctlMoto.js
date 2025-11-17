@@ -1,57 +1,89 @@
-const mdlMoto = require("../models/mdlMoto");
+const db = require("../database/databaseconfig");
 
-const getAllMoto = async (req, res) => {
-    try {
-        const dados = await mdlMoto.getAllMoto();
-        res.json(dados);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Buscar todas as motos (não deletadas)
+const getAllMoto = async () => {
+  const { rows } = await db.query(`
+    SELECT * FROM moto 
+    WHERE deleted = false 
+    ORDER BY idMoto;
+  `);
+  return rows;
 };
 
-const getMotoById = async (req, res) => {
-    try {
-        const { id_moto } = req.body;
-        const dado = await mdlMoto.getMotoById(id_moto);
-        res.json(dado);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Buscar moto por ID
+const getMotoById = async (idMoto) => {
+  const { rows } = await db.query(`
+    SELECT * FROM moto 
+    WHERE idMoto = $1 AND deleted = false;
+  `, [idMoto]);
+
+  return rows[0];
 };
 
-const insertMoto = async (req, res) => {
-    try {
-        const moto = await mdlMoto.insertMoto(req.body);
-        res.json(moto);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Criar moto
+const insertMoto = async (moto) => {
+  const { modeloMoto, marcaMoto, anoMoto, idCliente } = moto;
+
+  const query = `
+    INSERT INTO moto (modeloMoto, marcaMoto, anoMoto, idCliente)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `;
+
+  const values = [modeloMoto, marcaMoto, anoMoto, idCliente];
+  const { rows } = await db.query(query, values);
+
+  return rows[0];
 };
 
-const updateMoto = async (req, res) => {
-    try {
-        const { id_moto } = req.body;
-        const moto = await mdlMoto.updateMoto(id_moto, req.body);
-        res.json(moto);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Atualizar moto
+const updateMoto = async (idMoto, moto) => {
+  const { modeloMoto, marcaMoto, anoMoto, idCliente } = moto;
+
+  const query = `
+    UPDATE moto
+    SET
+      modeloMoto = $1,
+      marcaMoto = $2,
+      anoMoto = $3,
+      idCliente = $4
+    WHERE idMoto = $5 AND deleted = false
+    RETURNING *;
+  `;
+
+  const values = [modeloMoto, marcaMoto, anoMoto, idCliente, idMoto];
+
+  const { rows } = await db.query(query, values);
+  return rows[0];
 };
 
-const deleteMoto = async (req, res) => {
-    try {
-        const { id_moto } = req.body;
-        await mdlMoto.deleteMoto(id_moto);
-        res.json({ message: "Moto deletada." });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Deletar moto (soft delete)
+const deleteMoto = async (idMoto) => {
+  const { rows } = await db.query(`
+    UPDATE moto
+    SET deleted = true
+    WHERE idMoto = $1 AND deleted = false
+    RETURNING *;
+  `, [idMoto]);
+
+  return rows[0];
+};
+
+// Verificar se o cliente já cadastrou esse modelo (opcional)
+const verificarMotoExistente = async (modeloMoto, idCliente) => {
+  const { rows } = await db.query(`
+    SELECT * FROM moto
+    WHERE modeloMoto = $1 AND idCliente = $2 AND deleted = false;
+  `, [modeloMoto, idCliente]);
+
+  return rows.length > 0 ? rows[0] : null;
 };
 
 module.exports = {
-    getAllMoto,
-    getMotoById,
-    insertMoto,
-    updateMoto,
-    deleteMoto
+  getAllMoto,
+  getMotoById,
+  insertMoto,
+  updateMoto,
+  deleteMoto,
+  verificarMotoExistente,
 };

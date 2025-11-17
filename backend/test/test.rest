@@ -1,0 +1,41 @@
+@baseUrl = http://localhost:40000
+## Mude o token aqui para novos testes:
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJtYXJjZWxvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYzMzg1MzczLCJleHAiOjE3NjMzOTI1NzN9.tTbFSjEnWVVRz1-PwlL9OOmrD88IW5L_SKulxhyaxPs
+
+
+################################################
+# Logar Usuario
+################################################
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "UserName": "marcelo@example.com",
+  "Password": "123456"
+}
+
+
+################################################
+# Criar usuário
+################################################
+POST {{baseUrl}}/insertUsuario
+Content-Type: application/json
+
+{
+  "nome_usuario": "Marcelo",
+  "email_usuario": "marcelo@example.com",
+  "senha_usuario": "123456",
+  "tipo_usuario": "1"
+}
+
+################################################
+#  Buscar usuário por ID
+################################################
+POST {{baseUrl}}/GetUsuarioByID
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id_usuario": 1
+}
+
