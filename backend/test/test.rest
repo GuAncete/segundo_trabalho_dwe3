@@ -23,8 +23,8 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-  "UserName": "marcelo@example.com",
-  "Password": "123456"
+  "nome_usuario": "marcelo@example.com",
+  "senha_usuario": "123456"
 }
 
 
