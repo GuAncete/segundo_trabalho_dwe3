@@ -2,11 +2,15 @@ const db = require("../database/databaseconfig");
 
 // Buscar todas as motos (não deletadas)
 const getAllMoto = async () => {
-  const { rows } = await db.query(`
-    SELECT * FROM moto 
-    WHERE deleted = false 
-    ORDER BY id_moto;
-  `);
+  const query = `
+    SELECT 
+      moto.*, 
+      cliente.nome_cliente 
+    FROM moto
+    JOIN cliente ON moto.id_cliente = cliente.id_cliente
+    WHERE moto.deleted = false
+  `;
+  const { rows } = await db.query(query);
   return rows;
 };
 

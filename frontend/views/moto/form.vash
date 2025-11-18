@@ -1,0 +1,132 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    
+    <h1 class="mt-4">@model.title</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Preencha os dados da moto</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-motorcycle me-1"></i>
+            Formulário de Moto
+        </div>
+        <div class="card-body">
+
+            <form id="motoForm" 
+                  action="@(model.oper === 'insert' ? '/moto/insert' : '')" 
+                  method="@(model.oper === 'insert' ? 'POST' : 'dialog')">
+
+                @if(model.oper === 'update') {
+                    <input type="hidden" id="id_moto" name="id_moto" value="@model.data.id_moto">
+                }
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="modelo_moto" class="form-label">Modelo</label>
+                        <input type="text" class="form-control" id="modelo_moto" name="modelo_moto" value="@model.data.modelo_moto" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="marca_moto" class="form-label">Marca</label>
+                        <input type="text" class="form-control" id="marca_moto" name="marca_moto" value="@model.data.marca_moto" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="ano_moto" class="form-label">Ano</label>
+                        <input type="number" class="form-control" id="ano_moto" name="ano_moto" value="@model.data.ano_moto" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="id_cliente" class="form-label">Proprietário (Cliente)</label>
+                        <select class="form-select" id="id_cliente" name="id_cliente" required>
+                            <option value="">Selecione um cliente...</option>
+                            @model.clientes.forEach(function(cliente) {
+                                var selected = (model.data.id_cliente === cliente.id_cliente) ? 'selected' : '';
+                                <option value="@cliente.id_cliente" @selected>
+                                    @cliente.nome_cliente (CPF: @cliente.cpf_cliente)
+                                </option>
+                            })
+                        </select>
+                    </div>
+                </div>
+
+                <hr/>
+
+                @if(model.message) {
+                    <div id="formMessage" class="alert alert-danger" role="alert">
+                        @model.message
+                    </div>
+                }
+                <div id="formSuccessMessage" class="alert alert-success d-none" role="alert">
+                    Operação realizada com sucesso!
+                </div>
+
+                <div>
+                    @if(model.oper === 'insert') {
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Moto
+                        </button>
+                    }
+                    
+                    @if(model.oper === 'update') {
+                        <button type="button" class="btn btn-warning" onclick="postUpdate()">
+                            <i class="fas fa-pencil-alt"></i> Salvar Alterações
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="postDelete()">
+                            <i class="fas fa-trash"></i> Remover
+                        </button>
+                    }
+                    
+                    <a href="/moto/manut" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar para Listagem
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if(model.oper === 'update') {
+        <script>
+            function getFormData() {
+                return {
+                    id_moto: document.getElementById('id_moto').value,
+                    modelo_moto: document.getElementById('modelo_moto').value,
+                    marca_moto: document.getElementById('marca_moto').value,
+                    ano_moto: document.getElementById('ano_moto').value,
+                    id_cliente: document.getElementById('id_cliente').value,
+                };
+            }
+
+            async function postUpdate() {
+                const data = getFormData();
+                try {
+                    const response = await axios.post('/moto/update', data);
+                    if (response.data.status === 'ok') {
+                        document.getElementById('formSuccessMessage').classList.remove('d-none');
+                        document.getElementById('formMessage')?.classList.add('d-none');
+                    }
+                } catch (error) {
+                    alert('Erro ao atualizar: ' + error.message);
+                }
+            }
+
+            async function postDelete() {
+                if (!confirm('Tem certeza que deseja remover esta moto?')) {
+                    return;
+                }
+                const data = { id_moto: document.getElementById('id_moto').value };
+                try {
+                    const response = await axios.post('/moto/delete', data);
+                    if (response.data.status === 'ok') {
+                        window.location.href = '/moto/manut';
+                    }
+                } catch (error) {
+                    alert('Erro ao remover: ' + error.message);
+                }
+            }
+        </script>
+    }
+
+  })
+})

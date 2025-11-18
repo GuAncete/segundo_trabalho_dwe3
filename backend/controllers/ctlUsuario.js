@@ -33,18 +33,33 @@ const insertUsuario = async (req, res) => {
   try {
     const { nome_usuario, email_usuario, senha_usuario, tipo_usuario } = req.body;
 
-    if (!nome_usuario || !email_usuario || !senha_usuario || !tipo_usuario) {
+    if (!nome_usuario || !email_usuario || !senha_usuario || tipo_usuario === undefined) {
       return res.status(400).json({
-        error: "Campos nome_usuario, email_usuario, senha_usuario e tipo_usuario são obrigatórios."
+        error:
+          "Campos nome_usuario, email_usuario, senha_usuario e tipo_usuario são obrigatórios."
       });
     }
 
     const usuario = await mdlUsuario.insertUsuario(req.body);
-    res.json(usuario);
+
+    res.status(201).json({
+      status: "ok",
+      id_usuario: usuario.id_usuario
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "Este email já está cadastrado."
+      });
+    }
+
+    res.status(500).json({
+      error: error.message
+    });
   }
 };
+
 
 const updateUsuario = async (req, res) => {
   try {

@@ -1,0 +1,131 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    
+    <h1 class="mt-4">@model.title</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Preencha os dados do cliente</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-edit me-1"></i>
+            Formulário de Cliente
+        </div>
+        <div class="card-body">
+
+            <form id="clienteForm" 
+                  action="@(model.oper === 'insert' ? '/cliente/insert' : '')" 
+                  method="@(model.oper === 'insert' ? 'POST' : 'dialog')">
+
+                @if(model.oper === 'update') {
+                    <input type="hidden" id="id_cliente" name="id_cliente" value="@model.data.id_cliente">
+                }
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nome_cliente" class="form-label">Nome Completo</label>
+                        <input type="text" class="form-control" id="nome_cliente" name="nome_cliente" value="@model.data.nome_cliente" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cpf_cliente" class="form-label">CPF</label>
+                        <input type="text" class="form-control" id="cpf_cliente" name="cpf_cliente" value="@model.data.cpf_cliente" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email_cliente" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email_cliente" name="email_cliente" value="@model.data.email_cliente" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="telefone_cliente" class="form-label">Telefone</label>
+                        <input type="text" class="form-control" id="telefone_cliente" name="telefone_cliente" value="@model.data.telefone_cliente" required>
+                    </div>
+                </div>
+
+                <hr/>
+
+                @if(model.message) {
+                    <div id="formMessage" class="alert alert-danger" role="alert">
+                        @model.message
+                    </div>
+                }
+                <div id="formSuccessMessage" class="alert alert-success d-none" role="alert">
+                    Operação realizada com sucesso!
+                </div>
+
+
+                <div>
+                    @if(model.oper === 'insert') {
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Cliente
+                        </button>
+                    }
+                    
+                    @if(model.oper === 'update') {
+                        <button type="button" class="btn btn-warning" onclick="postUpdate()">
+                            <i class="fas fa-pencil-alt"></i> Salvar Alterações
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="postDelete()">
+                            <i class="fas fa-trash"></i> Remover
+                        </button>
+                    }
+
+                    <a href="/cliente/manut" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar para Listagem
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if(model.oper === 'update') {
+        <script>
+            // Função para pegar dados do formulário
+            function getFormData() {
+                return {
+                    id_cliente: document.getElementById('id_cliente').value,
+                    nome_cliente: document.getElementById('nome_cliente').value,
+                    cpf_cliente: document.getElementById('cpf_cliente').value,
+                    email_cliente: document.getElementById('email_cliente').value,
+                    telefone_cliente: document.getElementById('telefone_cliente').value,
+                };
+            }
+
+            // Função para Atualizar (UPDATE)
+            async function postUpdate() {
+                const data = getFormData();
+                
+                try {
+                    const response = await axios.post('/cliente/update', data);
+                    if (response.data.status === 'ok') {
+                        document.getElementById('formSuccessMessage').classList.remove('d-none');
+                        document.getElementById('formMessage')?.classList.add('d-none');
+                    }
+                } catch (error) {
+                    alert('Erro ao atualizar: ' + error.message);
+                }
+            }
+
+            // Função para Deletar (DELETE)
+            async function postDelete() {
+                if (!confirm('Tem certeza que deseja remover este cliente?')) {
+                    return;
+                }
+
+                const data = { id_cliente: document.getElementById('id_cliente').value };
+
+                try {
+                    const response = await axios.post('/cliente/delete', data);
+                    if (response.data.status === 'ok') {
+                        // Se deu certo, redireciona para a listagem
+                        window.location.href = '/cliente/manut';
+                    }
+                } catch (error) {
+                    alert('Erro ao remover: ' + error.message);
+                }
+            }
+        </script>
+    }
+
+  })
+})
