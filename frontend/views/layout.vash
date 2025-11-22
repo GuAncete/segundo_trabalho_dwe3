@@ -58,6 +58,17 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-motorcycle"></i></div>
                             Motos
                         </a>
+                        
+                        <a class="nav-link" href="/tratamento/manut">
+                            <div class="sb-nav-link-icon"><i class="fas fa-wrench"></i></div>
+                            Tratamentos
+                        </a>
+                        
+                        <a class="nav-link" href="/moto_tratamento/manut">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                            Ordens de Serviço
+                        </a>
+                        
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">

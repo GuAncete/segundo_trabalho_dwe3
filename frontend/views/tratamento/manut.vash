@@ -1,0 +1,55 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    
+    <h1 class="mt-4">@model.title</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Listagem de serviços/tratamentos</li>
+    </ol>
+
+    <div class="mb-3">
+        <a href="/tratamento/insert" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Tratamento
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-wrench me-1"></i>
+            Tratamentos
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Valor (R$)</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @model.data.forEach(function(tr) {
+                        <tr>
+                            <td>@tr.nome_tratamento</td>
+                            <td>@tr.valor_tratamento</td>
+                            <td>@tr.descricao_tratamento</td>
+                            <td>
+                                <a href="/tratamento/update/@tr.id_tratamento" class="btn btn-warning btn-sm" title="Editar">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    })
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if(model.message) {
+        <div class="alert alert-danger" role="alert">
+            @model.message
+        </div>
+    }
+
+  })
+})

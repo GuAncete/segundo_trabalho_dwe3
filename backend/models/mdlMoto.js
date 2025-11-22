@@ -9,7 +9,9 @@ const getAllMoto = async () => {
     FROM moto
     JOIN cliente ON moto.id_cliente = cliente.id_cliente
     WHERE moto.deleted = false
-  `;
+    ORDER BY cliente.nome_cliente ASC, moto.modelo_moto ASC
+  `; 
+  
   const { rows } = await db.query(query);
   return rows;
 };

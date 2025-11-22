@@ -18,5 +18,4 @@ router.get('/update/:id', authenticationMiddleware, ctlCliente.getUpdateCliente)
 router.post('/update', authenticationMiddleware, ctlCliente.postUpdateCliente);
 router.post('/delete', authenticationMiddleware, ctlCliente.postDeleteCliente);
 
-
 module.exports = router;

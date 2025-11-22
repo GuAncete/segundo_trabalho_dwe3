@@ -11,6 +11,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var rtCliente = require('./routes/rtCliente');
 var rtMoto = require('./routes/rtMoto'); 
+var rtTratamento = require('./routes/rtTratamento');
+var rtMotoTratamento = require('./routes/rtMotoTratamento');
 
 var app = express();
 
@@ -34,6 +36,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/cliente', rtCliente); 
 app.use('/moto', rtMoto);
+app.use('/tratamento', rtTratamento);
+app.use('/moto_tratamento', rtMotoTratamento);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,0 +1,115 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    
+    <h1 class="mt-4">@model.title</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Dados do serviço</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-edit me-1"></i>
+            Formulário
+        </div>
+        <div class="card-body">
+
+            <form id="tratamentoForm" 
+                  action="@(model.oper === 'insert' ? '/tratamento/insert' : '')" 
+                  method="@(model.oper === 'insert' ? 'POST' : 'dialog')">
+
+                @if(model.oper === 'update') {
+                    <input type="hidden" id="id_tratamento" name="id_tratamento" value="@model.data.id_tratamento">
+                }
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nome_tratamento" class="form-label">Nome do Tratamento</label>
+                        <input type="text" class="form-control" id="nome_tratamento" name="nome_tratamento" value="@model.data.nome_tratamento" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="valor_tratamento" class="form-label">Valor (R$)</label>
+                        <input type="number" step="0.01" class="form-control" id="valor_tratamento" name="valor_tratamento" value="@model.data.valor_tratamento" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="descricao_tratamento" class="form-label">Descrição (Opcional)</label>
+                    <textarea class="form-control" id="descricao_tratamento" name="descricao_tratamento" rows="3">@model.data.descricao_tratamento</textarea>
+                </div>
+
+                <hr/>
+
+                @if(model.message) {
+                    <div id="formMessage" class="alert alert-danger" role="alert">
+                        @model.message
+                    </div>
+                }
+                <div id="formSuccessMessage" class="alert alert-success d-none" role="alert">
+                    Operação realizada com sucesso!
+                </div>
+
+                <div>
+                    @if(model.oper === 'insert') {
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    }
+                    
+                    @if(model.oper === 'update') {
+                        <button type="button" class="btn btn-warning" onclick="postUpdate()">
+                            <i class="fas fa-pencil-alt"></i> Salvar Alterações
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="postDelete()">
+                            <i class="fas fa-trash"></i> Remover
+                        </button>
+                    }
+                    
+                    <a href="/tratamento/manut" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if(model.oper === 'update') {
+        <script>
+            function getFormData() {
+                return {
+                    id_tratamento: document.getElementById('id_tratamento').value,
+                    nome_tratamento: document.getElementById('nome_tratamento').value,
+                    valor_tratamento: document.getElementById('valor_tratamento').value,
+                    descricao_tratamento: document.getElementById('descricao_tratamento').value
+                };
+            }
+
+            async function postUpdate() {
+                const data = getFormData();
+                try {
+                    const response = await axios.post('/tratamento/update', data);
+                    if (response.data.status === 'ok') {
+                        document.getElementById('formSuccessMessage').classList.remove('d-none');
+                        document.getElementById('formMessage')?.classList.add('d-none');
+                    }
+                } catch (error) {
+                    alert('Erro ao atualizar: ' + error.message);
+                }
+            }
+
+            async function postDelete() {
+                if (!confirm('Tem certeza que deseja remover este tratamento?')) { return; }
+                const data = { id_tratamento: document.getElementById('id_tratamento').value };
+                try {
+                    const response = await axios.post('/tratamento/delete', data);
+                    if (response.data.status === 'ok') {
+                        window.location.href = '/tratamento/manut';
+                    }
+                } catch (error) {
+                    alert('Erro ao remover: ' + error.message);
+                }
+            }
+        </script>
+    }
+
+  })
+})

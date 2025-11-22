@@ -2,9 +2,21 @@ const db = require("../database/databaseconfig");
 
 // Buscar todos os registros moto_tratamento (não deletados)
 const getAllMotoTratamento = async () => {
-    const { rows } = await db.query(
-        "SELECT * FROM moto_tratamento WHERE deleted = false ORDER BY id_moto_tratamento;"
-    );
+    const query = `
+        SELECT 
+            mt.id_moto_tratamento, 
+            mt.id_moto, 
+            mt.id_tratamento,
+            m.modelo_moto, 
+            t.nome_tratamento, 
+            t.valor_tratamento
+        FROM moto_tratamento mt
+        JOIN moto m ON mt.id_moto = m.id_moto
+        JOIN tratamento t ON mt.id_tratamento = t.id_tratamento
+        WHERE mt.deleted = false 
+        ORDER BY mt.id_moto_tratamento;
+    `;
+    const { rows } = await db.query(query);
     return rows;
 };
 

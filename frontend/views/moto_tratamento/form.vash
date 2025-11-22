@@ -1,0 +1,99 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    
+    <h1 class="mt-4">@model.title</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Vincular Moto a Serviço</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-edit me-1"></i> Formulário</div>
+        <div class="card-body">
+
+            <form id="osForm" 
+                  action="@(model.oper === 'insert' ? '/moto_tratamento/insert' : '')" 
+                  method="@(model.oper === 'insert' ? 'POST' : 'dialog')">
+
+                @if(model.oper === 'update') {
+                    <input type="hidden" id="id_moto_tratamento" name="id_moto_tratamento" value="@model.data.id_moto_tratamento">
+                }
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_moto" class="form-label">Selecione a Moto</label>
+                        <select class="form-select" id="id_moto" name="id_moto" required>
+                            <option value="">Escolha...</option>
+                            @model.motos.forEach(function(m) {
+                                var selected = (model.data.id_moto === m.id_moto) ? 'selected' : '';
+                                
+                                <option value="@m.id_moto" @selected>
+                                    @m.modelo_moto (@m.marca_moto) [Proprietário: @m.nome_cliente]
+                                </option>
+                            })
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="id_tratamento" class="form-label">Selecione o Serviço</label>
+                        <select class="form-select" id="id_tratamento" name="id_tratamento" required>
+                            <option value="">Escolha...</option>
+                            @model.tratamentos.forEach(function(t) {
+                                var selected = (model.data.id_tratamento === t.id_tratamento) ? 'selected' : '';
+                                <option value="@t.id_tratamento" @selected>
+                                    @t.nome_tratamento (R$ @t.valor_tratamento)
+                                </option>
+                            })
+                        </select>
+                    </div>
+                </div>
+
+                <hr/>
+                <div id="formSuccessMessage" class="alert alert-success d-none">Sucesso!</div>
+
+                <div>
+                    @if(model.oper === 'insert') {
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                    }
+                    @if(model.oper === 'update') {
+                        <button type="button" class="btn btn-warning" onclick="postUpdate()"><i class="fas fa-pencil-alt"></i> Salvar</button>
+                        <button type="button" class="btn btn-danger" onclick="postDelete()"><i class="fas fa-trash"></i> Remover</button>
+                    }
+                    <a href="/moto_tratamento/manut" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if(model.oper === 'update') {
+        <script>
+            function getFormData() {
+                return {
+                    id_moto_tratamento: document.getElementById('id_moto_tratamento').value,
+                    id_moto: document.getElementById('id_moto').value,
+                    id_tratamento: document.getElementById('id_tratamento').value
+                };
+            }
+
+            async function postUpdate() {
+                try {
+                    const response = await axios.post('/moto_tratamento/update', getFormData());
+                    if (response.data.status === 'ok') {
+                         document.getElementById('formSuccessMessage').classList.remove('d-none');
+                    }
+                } catch (error) { alert('Erro: ' + error.message); }
+            }
+
+            async function postDelete() {
+                if (!confirm('Remover esta Ordem de Serviço?')) return;
+                try {
+                    const response = await axios.post('/moto_tratamento/delete', { 
+                        id_moto_tratamento: document.getElementById('id_moto_tratamento').value 
+                    });
+                    if (response.data.status === 'ok') window.location.href = '/moto_tratamento/manut';
+                } catch (error) { alert('Erro: ' + error.message); }
+            }
+        </script>
+    }
+
+  })
+})
