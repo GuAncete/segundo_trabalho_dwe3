@@ -48,12 +48,20 @@ exports.postInsertCliente = async (req, res) => {
         res.redirect('/cliente/manut');
     } catch (error) {
         console.error("Erro ao inserir cliente:", error);
+        
+        let message = "Erro ao salvar. Verifique os dados.";
+        
+        // Capturar mensagem específica do backend
+        if (error.response && error.response.data) {
+            message = error.response.data.message || error.response.data.error || message;
+        }
+        
         res.render('cliente/form', {
             title: 'Novo Cliente',
             userName: req.session.userName,
             oper: 'insert',
             data: req.body, 
-            message: "Erro ao salvar. Verifique os dados."
+            message: message
         });
     }
 };
@@ -86,7 +94,15 @@ exports.postUpdateCliente = async (req, res) => {
         res.json({ status: 'ok' });
     } catch (error) {
         console.error("Erro ao atualizar cliente:", error);
-        res.status(500).json({ status: 'erro', message: 'Falha ao atualizar.' });
+        
+        let message = 'Falha ao atualizar.';
+        
+        // Capturar mensagem específica do backend
+        if (error.response && error.response.data) {
+            message = error.response.data.message || error.response.data.error || message;
+        }
+        
+        res.status(error.response?.status || 500).json({ status: 'erro', message: message });
     }
 };
 

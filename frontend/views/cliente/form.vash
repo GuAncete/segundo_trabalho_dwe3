@@ -44,11 +44,11 @@
 
                 <hr/>
 
-                @if(model.message) {
-                    <div id="formMessage" class="alert alert-danger" role="alert">
+                <div id="formMessage" class="alert alert-danger @(model.message ? '' : 'd-none')" role="alert">
+                    @if(model.message) {
                         @model.message
-                    </div>
-                }
+                    }
+                </div>
                 <div id="formSuccessMessage" class="alert alert-success d-none" role="alert">
                     Operação realizada com sucesso!
                 </div>
@@ -99,10 +99,23 @@
                     const response = await axios.post('/cliente/update', data);
                     if (response.data.status === 'ok') {
                         document.getElementById('formSuccessMessage').classList.remove('d-none');
-                        document.getElementById('formMessage')?.classList.add('d-none');
+                        document.getElementById('formMessage').classList.add('d-none');
                     }
                 } catch (error) {
-                    alert('Erro ao atualizar: ' + error.message);
+                    // Capturar mensagem específica do backend
+                    let message = 'Erro ao atualizar. Verifique os dados.';
+                    if (error.response && error.response.data) {
+                        message = error.response.data.message || error.response.data.error || message;
+                    }
+                    
+                    // Exibir mensagem na div de erro
+                    const formMessage = document.getElementById('formMessage');
+                    formMessage.textContent = message;
+                    formMessage.classList.remove('d-none');
+                    document.getElementById('formSuccessMessage').classList.add('d-none');
+                    
+                    // Scroll para a mensagem de erro
+                    formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             }
 

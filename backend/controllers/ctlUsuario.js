@@ -49,8 +49,20 @@ const insertUsuario = async (req, res) => {
 
   } catch (error) {
     if (error.code === "23505") {
+      // Verificar qual campo causou a violação de constraint única
+      const constraint = (error.constraint || "").toLowerCase();
+      const detail = (error.detail || "").toLowerCase();
+      
+      // Verificar se é email duplicado
+      if (constraint.includes("email") || detail.includes("email_usuario")) {
+        return res.status(409).json({
+          message: "Este email já existe."
+        });
+      }
+      
+      // Caso genérico para outras constraints únicas
       return res.status(409).json({
-        message: "Este email já está cadastrado."
+        message: "Este email já existe."
       });
     }
 
@@ -77,6 +89,24 @@ const updateUsuario = async (req, res) => {
 
     res.json(usuario);
   } catch (error) {
+    if (error.code === "23505") {
+      // Verificar qual campo causou a violação de constraint única
+      const constraint = (error.constraint || "").toLowerCase();
+      const detail = (error.detail || "").toLowerCase();
+      
+      // Verificar se é email duplicado
+      if (constraint.includes("email") || detail.includes("email_usuario")) {
+        return res.status(409).json({
+          message: "Este email já existe."
+        });
+      }
+      
+      // Caso genérico para outras constraints únicas
+      return res.status(409).json({
+        message: "Este email já existe."
+      });
+    }
+
     res.status(500).json({ error: error.message });
   }
 };
