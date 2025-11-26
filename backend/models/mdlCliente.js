@@ -75,21 +75,10 @@ const deleteCliente = async (id_cliente) => {
   return rows[0];
 };
 
-// Verificar CPF existente
-const verificarCpfExistente = async (cpf_cliente) => {
-  const { rows } = await db.query(`
-    SELECT * FROM cliente
-    WHERE cpf_cliente = $1 AND deleted = false;
-  `, [cpf_cliente]);
-
-  return rows.length > 0 ? rows[0] : null;
-};
-
 module.exports = {
   getAllCliente,
   getClienteById,
   insertCliente,
   updateCliente,
   deleteCliente,
-  verificarCpfExistente,
 };
